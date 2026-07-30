@@ -44,8 +44,8 @@ ASSETS_DIR = ROOT / "assets"
 FILES_DIR = ROOT / "files"        # images & attachments, referenced as files/...
 OUTPUT_DIR = ROOT / "public"
 
-SITE_TITLE = "Random Thoughts"
-SITE_TAGLINE = "a place for whatever crosses my mind"
+SITE_TITLE = "Quẩn quanh quanh quẩn"
+SITE_TAGLINE = "nghĩ gì nói đấy chả quan tâm"
 AUTHOR = "btt"
 HOME_RECENT = 25  # posts shown on the homepage
 
@@ -229,7 +229,7 @@ def page_shell(depth, title, body_html, sidebar_html):
   </aside>
 </div>
 <footer class="site-footer">
-  <p>Written by {esc(AUTHOR)}. Built with a tiny Python script.</p>
+  <p>Bốc phét từ mồm {esc(AUTHOR)}. Code ăn cướp được.</p>
 </footer>
 <script>
 document.getElementById('menu-toggle').addEventListener('click',function(){{
