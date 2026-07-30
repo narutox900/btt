@@ -1,0 +1,8 @@
+# One tag per line. Register new tags with:  python new.py tag <name>
+example
+code
+notes
+game
+music
+movie
+random
