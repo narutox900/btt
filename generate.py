@@ -49,6 +49,14 @@ SITE_TAGLINE = "a place for whatever crosses my mind"
 AUTHOR = "btt"
 HOME_RECENT = 25  # posts shown on the homepage
 
+# External profile links, shown in the sidebar "Elsewhere" block.
+# (label, url) — fill in the URLs when you have them.
+LINKS = [
+    ("nhạc nhẽo", "https://open.spotify.com/user/ksgob34txxt74pah0011xiegm?si=94770db61ec14e22"),      # spotify
+    ("phim phọt", "https://letterboxd.com/narutox900/"),      # letterboxd
+    ("sách sủng", "http://goodreads.com/user/show/85308781-btt"),      # goodreads
+]
+
 VN_MONTHS = [
     "", "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December",
@@ -265,6 +273,17 @@ def build_sidebar(depth, by_year, by_tag):
     )
     archives_index = rel(depth, "archives/index.html")
     tags_index = rel(depth, "archives/tags/index.html")
+    links_items = "\n".join(
+        f'    <li><a href="{esc(url)}"{"" if url.startswith("#") else " rel=\"me noopener\" target=\"_blank\""}>{esc(label)}</a></li>'
+        for label, url in LINKS
+    )
+    links_block = f"""
+    <section class="side-block">
+      <h3>Elsewhere</h3>
+      <ul class="side-list links">
+{links_items}
+      </ul>
+    </section>""" if LINKS else ""
     return f"""    <section class="side-block">
       <h3><a href="{archives_index}">Archives</a></h3>
       <ul class="side-list">
@@ -276,7 +295,7 @@ def build_sidebar(depth, by_year, by_tag):
       <ul class="side-list tags">
 {tag_items}
       </ul>
-    </section>"""
+    </section>{links_block}"""
 
 
 # --------------------------------------------------------------------------- #

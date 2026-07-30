@@ -167,6 +167,8 @@ a:hover { text-decoration: underline; }
 .side-list li { padding: 3px 0; }
 .side-list.tags { display: flex; flex-wrap: wrap; gap: 6px 12px; }
 .side-list.tags li { padding: 0; }
+.side-list.links a { color: var(--text); }
+.side-list.links a:hover { color: var(--accent); }
 
 /* Footer */
 .site-footer {
