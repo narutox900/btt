@@ -344,7 +344,7 @@ def build():
     sidebar0 = build_sidebar(0, by_year, by_tag)
     recent = thoughts[:HOME_RECENT]
     if recent:
-        body = '    <h1 class="page-title">Recent thoughts</h1>\n'
+        body = '    <h1 class="page-title">từ trên xuống dưới</h1>\n'
         body += "\n".join(render_post(0, t) for t in recent)
         if len(thoughts) > HOME_RECENT:
             body += f'\n    <p class="more"><a href="archives/index.html">Older thoughts in the archives &rarr;</a></p>'
