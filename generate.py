@@ -42,6 +42,7 @@ ROOT = Path(__file__).resolve().parent
 ENTRIES_DIR = ROOT / "entries"    # source posts, bucketed into entries/YYYYMM/
 ASSETS_DIR = ROOT / "assets"
 FILES_DIR = ROOT / "files"        # images & attachments, referenced as files/...
+FAVICON_DIR = ROOT / "favicon"    # favicon set, copied flat to the site root
 OUTPUT_DIR = ROOT / "public"
 
 SITE_TITLE = "linh tinh vớ vẩn"
@@ -205,6 +206,11 @@ def tag_slug(tag):
 def page_shell(depth, title, body_html, sidebar_html):
     css = rel(depth, "styles/style.css")
     home = rel(depth, "index.html")
+    favicon = f"""<link rel="icon" href="{rel(depth, "favicon.ico")}" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="{rel(depth, "favicon-32x32.png")}">
+<link rel="icon" type="image/png" sizes="16x16" href="{rel(depth, "favicon-16x16.png")}">
+<link rel="apple-touch-icon" href="{rel(depth, "apple-touch-icon.png")}">
+<link rel="manifest" href="{rel(depth, "site.webmanifest")}">"""
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -212,6 +218,7 @@ def page_shell(depth, title, body_html, sidebar_html):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="thoughts.py">
 <title>{esc(title)}</title>
+{favicon}
 <link rel="stylesheet" href="{css}">
 </head>
 <body>
@@ -339,6 +346,12 @@ def build():
     # images & attachments (referenced in Markdown as files/...)
     if FILES_DIR.exists():
         shutil.copytree(FILES_DIR, OUTPUT_DIR / "files")
+
+    # favicon set, copied flat to the site root (favicon.ico, etc.)
+    if FAVICON_DIR.exists():
+        for icon in FAVICON_DIR.iterdir():
+            if icon.is_file():
+                shutil.copy2(icon, OUTPUT_DIR / icon.name)
 
     # --- homepage (depth 0) ---
     sidebar0 = build_sidebar(0, by_year, by_tag)
