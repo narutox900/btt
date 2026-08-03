@@ -170,11 +170,10 @@ a:hover { text-decoration: underline; }
 .side-list.links a { color: var(--text); }
 .side-list.links a:hover { color: var(--accent); }
 .side-all {
-  display: inline-block; margin-top: 10px; font-size: 0.8rem;
-  padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px;
+  display: inline-block; margin-top: 10px; font-size: 0.82rem;
   color: var(--muted);
 }
-.side-all:hover { color: var(--accent); border-color: var(--accent); }
+.side-all:hover { color: var(--accent); }
 
 /* Footer */
 .site-footer {
