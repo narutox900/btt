@@ -308,7 +308,7 @@ def build_sidebar(depth, by_month, by_tag):
     # the full archive.
     recent_months = sorted(by_month, reverse=True)[:5]
     month_items = "\n".join(
-        f'    <li><a href="{rel(depth, f"archives/{y:04d}/{m:02d}/index.html")}">{VN_MONTHS[m]} {y}</a> '
+        f'    <li><a href="{rel(depth, f"archives/{y:04d}/{m:02d}/index.html")}">{y:04d}/{m:02d}</a> '
         f'<span class="count">{len(by_month[(y, m)])}</span></li>'
         for (y, m) in recent_months
     )
