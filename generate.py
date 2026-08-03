@@ -44,8 +44,8 @@ ASSETS_DIR = ROOT / "assets"
 FILES_DIR = ROOT / "files"        # images & attachments, referenced as files/...
 OUTPUT_DIR = ROOT / "public"
 
-SITE_TITLE = "Quẩn quanh quanh quẩn"
-SITE_TAGLINE = "nghĩ gì nói đấy chả quan tâm"
+SITE_TITLE = "linh tinh vớ vẩn"
+SITE_TAGLINE = "viết nhảm tìm sự chú ý"
 AUTHOR = "btt"
 HOME_RECENT = 25  # posts shown on the homepage
 
