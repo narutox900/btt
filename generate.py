@@ -303,11 +303,14 @@ def render_post(depth, t, heading_level=2):
     </article>"""
 
 
-def build_sidebar(depth, by_year, by_tag):
-    year_items = "\n".join(
-        f'    <li><a href="{rel(depth, f"archives/{y:04d}/index.html")}">{y}</a> '
-        f'<span class="count">{len(posts)}</span></li>'
-        for y, posts in sorted(by_year.items(), reverse=True)
+def build_sidebar(depth, by_month, by_tag):
+    # 5 most recent months that actually have entries; the button below opens
+    # the full archive.
+    recent_months = sorted(by_month, reverse=True)[:5]
+    month_items = "\n".join(
+        f'    <li><a href="{rel(depth, f"archives/{y:04d}/{m:02d}/index.html")}">{VN_MONTHS[m]} {y}</a> '
+        f'<span class="count">{len(by_month[(y, m)])}</span></li>'
+        for (y, m) in recent_months
     )
     tag_items = "\n".join(
         f'    <li><a href="{rel(depth, "archives/tags/" + tag_slug(tag) + ".html")}">{esc(tag)}</a> '
@@ -330,8 +333,9 @@ def build_sidebar(depth, by_year, by_tag):
     return f"""    <section class="side-block">
       <h3><a href="{archives_index}">Archives</a></h3>
       <ul class="side-list">
-{year_items}
+{month_items}
       </ul>
+      <a class="side-all" href="{archives_index}">tất tần tật &rarr;</a>
     </section>
     <section class="side-block">
       <h3><a href="{tags_index}">Tags</a></h3>
@@ -390,7 +394,7 @@ def build():
                 shutil.copy2(icon, OUTPUT_DIR / icon.name)
 
     # --- homepage (depth 0) ---
-    sidebar0 = build_sidebar(0, by_year, by_tag)
+    sidebar0 = build_sidebar(0, by_month, by_tag)
     recent = thoughts[:HOME_RECENT]
     if recent:
         body = '    <h1 class="page-title">từ trên xuống dưới</h1>\n'
@@ -402,7 +406,7 @@ def build():
     write(OUTPUT_DIR / "index.html", page_shell(0, SITE_TITLE, body, sidebar0))
 
     # --- archives index (depth 1): years ---
-    sidebar1 = build_sidebar(1, by_year, by_tag)
+    sidebar1 = build_sidebar(1, by_month, by_tag)
     year_blocks = []
     for y in sorted(by_year, reverse=True):
         months = sorted({m for (yy, m) in by_month if yy == y}, reverse=True)
@@ -421,7 +425,7 @@ def build():
           page_shell(1, f"Archives · {SITE_TITLE}", body, sidebar1))
 
     # --- per-year (depth 2) ---
-    sidebar2 = build_sidebar(2, by_year, by_tag)
+    sidebar2 = build_sidebar(2, by_month, by_tag)
     for y in by_year:
         months = sorted({m for (yy, m) in by_month if yy == y}, reverse=True)
         blocks = []
@@ -441,7 +445,7 @@ def build():
               page_shell(2, f"{y} · {SITE_TITLE}", body, sidebar2))
 
     # --- per-month (depth 3): full posts ---
-    sidebar3 = build_sidebar(3, by_year, by_tag)
+    sidebar3 = build_sidebar(3, by_month, by_tag)
     for (y, m), posts in by_month.items():
         posts_sorted = sorted(posts, key=lambda t: t.dt, reverse=True)
         body = f'    <h1 class="page-title">{VN_MONTHS[m]} {y}</h1>\n'
