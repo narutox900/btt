@@ -33,6 +33,10 @@ import unicodedata
 from datetime import datetime
 from pathlib import Path
 
+# Machine's current timezone — used to stamp new entries and to interpret any
+# stored date that lacks an explicit offset.
+LOCAL_TZ = datetime.now().astimezone().tzinfo
+
 try:
     import markdown as md_lib
 except ImportError:
@@ -104,17 +108,26 @@ def parse_frontmatter(raw):
     return meta, body
 
 
+def _aware(dt):
+    """Coerce a naive datetime to the machine's local timezone; leave aware ones."""
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=LOCAL_TZ)
+
+
 def parse_date(value, fallback):
     if not value:
-        return fallback
+        return _aware(fallback)
     value = value.strip()
-    for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M:%S",
+    # %z variants first so an explicit offset (e.g. "+0700") is honoured; the
+    # plain variants then catch legacy dates written without a timezone.
+    for fmt in ("%Y-%m-%d %H:%M:%S %z", "%Y-%m-%d %H:%M %z", "%Y-%m-%dT%H:%M:%S%z",
+                "%Y-%m-%dT%H:%M%z",
+                "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M:%S",
                 "%Y-%m-%dT%H:%M", "%Y-%m-%d"):
         try:
-            return datetime.strptime(value, fmt)
+            return _aware(datetime.strptime(value, fmt))
         except ValueError:
             continue
-    return fallback
+    return _aware(fallback)
 
 
 class Thought:
@@ -132,7 +145,7 @@ class Thought:
             fname_slug = rest
 
         # file mtime as a last-resort fallback so posts always sort somehow
-        fallback = parse_date(fname_date, datetime.fromtimestamp(path.stat().st_mtime))
+        fallback = parse_date(fname_date, datetime.fromtimestamp(path.stat().st_mtime).astimezone())
         self.dt = parse_date(meta.get("date"), fallback)
         self.title = meta.get("title") or fname_slug.replace("-", " ").strip().capitalize()
         self.tags = meta.get("tags", [])
@@ -195,8 +208,31 @@ def esc(s):
     return html.escape(str(s))
 
 
+def gmt_label(dt):
+    """Human-friendly offset label, e.g. 'GMT+7', 'GMT+5:30', 'GMT-5'."""
+    off = dt.utcoffset()
+    if off is None:
+        return ""
+    total = int(off.total_seconds())
+    sign = "+" if total >= 0 else "-"
+    h, m = divmod(abs(total) // 60, 60)
+    return f"GMT{sign}{h}" + (f":{m:02d}" if m else "")
+
+
 def fmt_date(dt):
-    return dt.strftime(f"%a, %d {VN_MONTHS[dt.month]} %Y &middot; %H:%M")
+    base = dt.strftime(f"%a, %d {VN_MONTHS[dt.month]} %Y &middot; %H:%M")
+    label = gmt_label(dt)
+    return f"{base} {label}" if label else base
+
+
+def now_local():
+    """Current time as an aware datetime in the machine's timezone."""
+    return datetime.now().astimezone()
+
+
+def frontmatter_date(dt):
+    """Serialise a datetime for frontmatter, e.g. '2026-08-03 21:17 +0700'."""
+    return dt.strftime("%Y-%m-%d %H:%M %z")
 
 
 def tag_slug(tag):
@@ -447,7 +483,7 @@ def build():
 # --------------------------------------------------------------------------- #
 
 def cmd_new(title, tags, date_str):
-    dt = parse_date(date_str, datetime.now())
+    dt = parse_date(date_str, now_local())
     slug = slugify(title)
     fname = f"{dt.strftime('%Y-%m-%d')}-{slug}.md"
     path = ENTRIES_DIR / dt.strftime("%Y%m") / fname
@@ -459,7 +495,7 @@ def cmd_new(title, tags, date_str):
     content = (
         "---\n"
         f"title: {title}\n"
-        f"date: {dt.strftime('%Y-%m-%d %H:%M')}\n"
+        f"date: {frontmatter_date(dt)}\n"
         f"tags: [{', '.join(tag_list)}]\n"
         "---\n\n"
         "Write your thought here...\n"

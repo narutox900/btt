@@ -1,6 +1,6 @@
 ---
 title: mở màn cái gì đó hay ho
-date: 2026-07-30 22:32
+date: 2026-07-30 22:32 +0700
 tags: [movie, random]
 ---
 

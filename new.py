@@ -13,10 +13,9 @@ Posts are plain Markdown files under entries/YYYYMM/ — build with generate.py.
 
 import subprocess
 import sys
-from datetime import datetime
 from pathlib import Path
 
-from generate import ROOT, ENTRIES_DIR, Thought, slugify
+from generate import ROOT, ENTRIES_DIR, Thought, slugify, now_local, frontmatter_date
 
 TAGS_FILE = ROOT / "tags.txt"
 
@@ -129,7 +128,7 @@ def create_post(title=None):
         return
 
     tags = choose_tags()
-    dt = datetime.now()
+    dt = now_local()
     slug = slugify(title)
     path = ENTRIES_DIR / dt.strftime("%Y%m") / f"{dt.strftime('%Y-%m-%d')}-{slug}.md"
     if path.exists():
@@ -140,7 +139,7 @@ def create_post(title=None):
     body = (
         "---\n"
         f"title: {title}\n"
-        f"date: {dt.strftime('%Y-%m-%d %H:%M')}\n"
+        f"date: {frontmatter_date(dt)}\n"
         f"tags: [{', '.join(tags)}]\n"
         "---\n\n"
         "Write your thought here...\n"

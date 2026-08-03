@@ -1,6 +1,6 @@
 ---
 title: Loving Karma
-date: 2026-08-03 21:17
+date: 2026-08-03 21:17 +0700
 tags: [movie, random]
 ---
 
