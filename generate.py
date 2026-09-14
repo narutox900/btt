@@ -178,9 +178,16 @@ class Thought:
             # graceful fallback: escape + paragraph-ise
             paras = [html.escape(p) for p in re.split(r"\n\s*\n", self.body_md)]
             return "\n".join(f"<p>{p}</p>" for p in paras if p)
+        extensions = ["fenced_code", "codehilite", "tables", "sane_lists", "nl2br"]
+        # GFM-style strikethrough (~~text~~) via pymdownx.tilde, if available.
+        try:
+            import pymdownx.tilde  # noqa: F401
+            extensions.append("pymdownx.tilde")
+        except ImportError:
+            pass
         return md_lib.markdown(
             self.body_md,
-            extensions=["fenced_code", "codehilite", "tables", "sane_lists", "nl2br"],
+            extensions=extensions,
             extension_configs={"codehilite": {"guess_lang": False}},
         )
 
