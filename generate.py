@@ -26,6 +26,7 @@ A thought file looks like:
 
 import argparse
 import html
+import json
 import re
 import shutil
 import sys
@@ -60,6 +61,15 @@ LINKS = [
     ("nhạc nhẽo", "https://open.spotify.com/user/ksgob34txxt74pah0011xiegm?si=94770db61ec14e22"),      # spotify
     ("phim phọt", "https://letterboxd.com/narutox900/"),      # letterboxd
     ("sách sủng", "http://goodreads.com/user/show/85308781-btt"),      # goodreads
+]
+
+# Short quotes / poems for the sidebar. One is picked at random each page load
+# (client-side, so a refresh reshuffles). Each item is (text, source) — leave
+# source as "" to show just the text.
+QUOTES = [
+    ("""Tôi khóc những chân trời không có người bay
+Lại khóc những người bay không có chân trời""", "Trần Dần"),
+    ("I'm pretty sure I'm connected to the moon", "David Lynch"),
 ]
 
 VN_MONTHS = [
@@ -337,6 +347,31 @@ def build_sidebar(depth, by_month, by_tag):
 {links_items}
       </ul>
     </section>""" if LINKS else ""
+    # A random quote/poem, reshuffled client-side on every refresh. Escape "<"
+    # so a quote can never break out of the <script> tag.
+    quotes_json = json.dumps(
+        [{"text": text, "source": source} for text, source in QUOTES],
+        ensure_ascii=False,
+    ).replace("<", "\\u003c")
+    quotes_block = f"""
+    <section class="side-block quotes-block">
+      <h3>Inspirations</h3>
+      <figure class="side-quote">
+        <blockquote id="side-quote-text"></blockquote>
+        <figcaption id="side-quote-source"></figcaption>
+      </figure>
+    </section>
+    <script>
+    (function(){{
+      var q = {quotes_json};
+      if (!q.length) return;
+      var pick = q[Math.floor(Math.random() * q.length)];
+      document.getElementById('side-quote-text').textContent = pick.text;
+      var src = document.getElementById('side-quote-source');
+      if (pick.source) {{ src.textContent = '— ' + pick.source; }}
+      else {{ src.remove(); }}
+    }})();
+    </script>""" if QUOTES else ""
     return f"""    <section class="side-block">
       <h3><a href="{archives_index}">Archives</a></h3>
       <ul class="side-list">
@@ -349,7 +384,7 @@ def build_sidebar(depth, by_month, by_tag):
       <ul class="side-list tags">
 {tag_items}
       </ul>
-    </section>{links_block}"""
+    </section>{quotes_block}{links_block}"""
 
 
 # --------------------------------------------------------------------------- #
