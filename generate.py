@@ -67,7 +67,7 @@ LINKS = [
 # (client-side, so a refresh reshuffles). Each item is (text, source) — leave
 # source as "" to show just the text.
 QUOTES = [
-    ("""Tôi khóc những chân trời không có người bay
+    ("""Tôi khóc những chân trời không có người bay\n
 Lại khóc những người bay không có chân trời""", "Trần Dần"),
     ("I'm pretty sure I'm connected to the moon", "David Lynch"),
 ]
