@@ -61,6 +61,7 @@ LINKS = [
     ("nhạc nhẽo", "https://open.spotify.com/user/ksgob34txxt74pah0011xiegm?si=94770db61ec14e22"),      # spotify
     ("phim phọt", "https://letterboxd.com/narutox900/"),      # letterboxd
     ("sách sủng", "http://goodreads.com/user/show/85308781-btt"),      # goodreads
+    ("thư từ", "mailto:buithanhtung2106@gmail.com"),      # email
 ]
 
 # Short quotes / poems for the sidebar. One is picked at random each page load
