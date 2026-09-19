@@ -436,6 +436,11 @@ def build():
             if icon.is_file():
                 shutil.copy2(icon, OUTPUT_DIR / icon.name)
 
+    # robots.txt — block all crawling for now
+    (OUTPUT_DIR / "robots.txt").write_text(
+        "User-agent: *\nDisallow: /\n", encoding="utf-8"
+    )
+
     # --- homepage (depth 0) ---
     sidebar0 = build_sidebar(0, by_month, by_tag)
     recent = thoughts[:HOME_RECENT]
